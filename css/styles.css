@@ -1,0 +1,385 @@
+:root {
+  --bg: #f6efe7;
+  --paper: #fffaf3;
+  --ink: #2f241d;
+  --muted: #7d6a5d;
+  --accent: #8b4b2f;
+  --accent-dark: #5f301f;
+  --line: #e4d4c5;
+  --soft: #ead8c7;
+  --shadow: 0 18px 45px rgba(62, 42, 28, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #fff8ee 0, #f6efe7 42%, #ead8c7 100%);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hero {
+  padding: 56px 20px 36px;
+  text-align: center;
+}
+
+.hero__content {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  line-height: 1.05;
+}
+
+h1 {
+  margin-bottom: 12px;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+}
+
+.hero__text {
+  max-width: 650px;
+  margin: 0 auto;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 64px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  background: rgba(255, 250, 243, 0.75);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.tab-button {
+  border: 0;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tab-button.active {
+  background: var(--accent);
+  color: #fffaf3;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compact {
+  gap: 12px;
+}
+
+.card,
+.idea-card,
+.book-card {
+  background: rgba(255, 250, 243, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+}
+
+.card {
+  padding: 24px;
+}
+
+.section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.section-title span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
+.section-title h2,
+.section-heading h2 {
+  margin-bottom: 4px;
+  font-size: 2rem;
+}
+
+.section-title p,
+.section-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.section-heading {
+  margin: 28px 0 18px;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fffdf8;
+  color: var(--ink);
+  padding: 13px 14px;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(139, 75, 47, 0.12);
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.search-row button,
+.primary-action {
+  border: 0;
+  border-radius: 16px;
+  background: var(--accent);
+  color: #fffaf3;
+  padding: 13px 18px;
+  font-weight: 800;
+}
+
+.search-row button:hover,
+.primary-action:hover {
+  background: var(--accent-dark);
+}
+
+.primary-action {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.cover-preview {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  overflow: hidden;
+  border: 2px dashed var(--line);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fffaf3, #ead8c7);
+  color: var(--muted);
+  text-align: center;
+}
+
+.cover-preview img {
+  width: min(260px, 85%);
+  max-height: 390px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 20px 36px rgba(47, 36, 29, 0.26);
+}
+
+.tip-box {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  background: #f3e5d7;
+}
+
+.tip-box h3 {
+  margin-bottom: 6px;
+  font-size: 1.45rem;
+}
+
+.tip-box p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.bookshelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 18px;
+  padding: 24px;
+  border-radius: 30px;
+  background: linear-gradient(#8b4b2f 0 12px, #fffaf3 12px 100%);
+  box-shadow: var(--shadow);
+}
+
+.book-card {
+  overflow: hidden;
+}
+
+.book-card__cover {
+  width: 100%;
+  height: 270px;
+  display: block;
+  object-fit: cover;
+  background: #ead8c7;
+}
+
+.book-card__body {
+  padding: 14px;
+}
+
+.book-card h3 {
+  margin-bottom: 6px;
+  font-size: 1.35rem;
+}
+
+.book-card p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.book-rating {
+  color: var(--accent-dark) !important;
+  font-weight: 800;
+}
+
+details {
+  color: var(--muted);
+}
+
+summary {
+  color: var(--accent-dark);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.list-card h2 {
+  font-size: 2rem;
+}
+
+.list-item {
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffdf8;
+}
+
+.list-item strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.list-item p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.ideas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.idea-card {
+  padding: 22px;
+}
+
+.idea-card h3 {
+  margin-bottom: 8px;
+  font-size: 1.55rem;
+}
+
+.idea-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+  border: 2px dashed var(--line);
+  border-radius: 24px;
+  background: rgba(255, 250, 243, 0.7);
+}
+
+@media (max-width: 860px) {
+  .grid-2,
+  .search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-preview {
+    min-height: 300px;
+  }
+}
