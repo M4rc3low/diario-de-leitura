@@ -110,8 +110,117 @@ function switchTab(tabId) {
   });
 }
 
+function buildSearchTerms(title, author) {
+  const cleanTitle = title.replace(/[“”"'`´]/g, '').replace(/\s+/g, ' ').trim();
+  const cleanAuthor = author.replace(/[“”"'`´]/g, '').replace(/\s+/g, ' ').trim();
+  const terms = [];
+
+  if (cleanTitle && cleanAuthor) terms.push(`${cleanTitle} ${cleanAuthor}`);
+  if (cleanTitle && cleanAuthor) terms.push(`intitle:${cleanTitle} inauthor:${cleanAuthor}`);
+  if (cleanTitle) terms.push(cleanTitle);
+
+  return [...new Set(terms)];
+}
+
+function getBestGoogleImage(imageLinks) {
+  if (!imageLinks) return '';
+  const url = imageLinks.extraLarge || imageLinks.large || imageLinks.medium || imageLinks.small || imageLinks.thumbnail || imageLinks.smallThumbnail || '';
+  return url ? url.replace('http://', 'https://').replace('zoom=1', 'zoom=3') : '';
+}
+
+function calculateMatchScore(candidate, title, author) {
+  const targetTitle = normalizeText(title);
+  const targetAuthor = normalizeText(author);
+  const candidateTitle = normalizeText(candidate.title);
+  const candidateAuthors = normalizeText(candidate.authors);
+  let score = 0;
+
+  if (candidate.coverUrl) score += 40;
+  if (candidateTitle === targetTitle) score += 35;
+  if (candidateTitle.includes(targetTitle) || targetTitle.includes(candidateTitle)) score += 18;
+  if (targetAuthor && candidateAuthors.includes(targetAuthor)) score += 20;
+  if (candidate.pageCount) score += 4;
+  if (candidate.genre) score += 3;
+  if (candidate.source === 'Google Books') score += 6;
+  if (candidate.source === 'Open Library') score += 4;
+
+  return score;
+}
+
+async function searchOpenLibrary(title, author) {
+  const params = new URLSearchParams();
+  params.set('title', title);
+  if (author) params.set('author', author);
+  params.set('limit', '10');
+
+  const response = await fetch(`https://openlibrary.org/search.json?${params.toString()}`);
+  const data = await response.json();
+
+  return (data.docs || []).map((book) => {
+    const isbn = book.isbn?.[0];
+    const coverUrl = book.cover_i
+      ? `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`
+      : isbn
+        ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`
+        : '';
+
+    return {
+      source: 'Open Library',
+      title: book.title || title,
+      authors: book.author_name?.join(', ') || '',
+      pageCount: book.number_of_pages_median || '',
+      genre: book.subject?.slice(0, 2).join(', ') || '',
+      coverUrl
+    };
+  });
+}
+
+async function searchGoogleBooks(title, author) {
+  const terms = buildSearchTerms(title, author);
+  const results = [];
+
+  for (const term of terms) {
+    const params = new URLSearchParams();
+    params.set('q', term);
+    params.set('maxResults', '10');
+    params.set('printType', 'books');
+    params.set('projection', 'lite');
+
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?${params.toString()}`);
+    const data = await response.json();
+
+    (data.items || []).forEach((item) => {
+      const info = item.volumeInfo || {};
+      const coverUrl = getBestGoogleImage(info.imageLinks);
+      results.push({
+        source: 'Google Books',
+        title: info.title || title,
+        authors: info.authors?.join(', ') || '',
+        pageCount: info.pageCount || '',
+        genre: info.categories?.slice(0, 2).join(', ') || '',
+        coverUrl
+      });
+    });
+  }
+
+  return results;
+}
+
+function fillBookFieldsFromCandidate(candidate) {
+  if (candidate.title && !$('#title').value.trim()) $('#title').value = candidate.title;
+  if (candidate.authors && !$('#author').value.trim()) $('#author').value = candidate.authors.split(',')[0];
+  if (candidate.pageCount && !$('#pages').value) $('#pages').value = candidate.pageCount;
+  if (candidate.genre && !$('#genre').value.trim()) $('#genre').value = candidate.genre;
+
+  if (candidate.coverUrl) {
+    $('#coverUrl').value = candidate.coverUrl;
+    updateCoverPreview(candidate.coverUrl);
+  }
+}
+
 async function searchBookCover() {
   const title = $('#title').value.trim();
+  const author = $('#author').value.trim();
 
   if (!title) {
     alert('Digite o nome do livro antes de buscar a capa.');
@@ -119,43 +228,38 @@ async function searchBookCover() {
   }
 
   const button = $('#searchBookBtn');
-  button.textContent = 'Buscando...';
+  button.textContent = 'Buscando em mais fontes...';
   button.disabled = true;
 
   try {
-    const response = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1`);
-    const data = await response.json();
-    const book = data.docs?.[0];
+    const responses = await Promise.allSettled([
+      searchOpenLibrary(title, author),
+      searchGoogleBooks(title, author)
+    ]);
 
-    if (!book) {
-      alert('Não encontrei esse livro na API. Você pode colar a URL da capa manualmente.');
+    const candidates = responses
+      .flatMap((response) => response.status === 'fulfilled' ? response.value : [])
+      .filter((candidate) => candidate.coverUrl);
+
+    if (!candidates.length) {
+      alert('Não encontrei uma capa automática. Tente preencher também o autor ou cole a URL da capa manualmente.');
       return;
     }
 
-    if (book.author_name?.[0] && !$('#author').value) {
-      $('#author').value = book.author_name[0];
-    }
+    const bestCandidate = candidates
+      .map((candidate) => ({ ...candidate, score: calculateMatchScore(candidate, title, author) }))
+      .sort((a, b) => b.score - a.score)[0];
 
-    if (book.number_of_pages_median && !$('#pages').value) {
-      $('#pages').value = book.number_of_pages_median;
-    }
-
-    if (book.subject?.length && !$('#genre').value) {
-      $('#genre').value = book.subject.slice(0, 2).join(', ');
-    }
-
-    if (book.cover_i) {
-      const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`;
-      $('#coverUrl').value = coverUrl;
-      updateCoverPreview(coverUrl);
-    } else {
-      alert('Encontrei o livro, mas ele não tem capa disponível.');
-    }
+    fillBookFieldsFromCandidate(bestCandidate);
+    button.textContent = `Capa encontrada: ${bestCandidate.source}`;
+    setTimeout(() => {
+      button.textContent = 'Buscar capa';
+    }, 1800);
   } catch (error) {
     alert('Não foi possível buscar a capa agora. Verifique sua internet ou tente novamente.');
   } finally {
-    button.textContent = 'Buscar capa';
     button.disabled = false;
+    if (button.textContent === 'Buscando em mais fontes...') button.textContent = 'Buscar capa';
   }
 }
 
