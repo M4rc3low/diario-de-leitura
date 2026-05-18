@@ -14,14 +14,17 @@
     <div class="hero__content">
       <p class="eyebrow">Meu caderno pessoal de livros</p>
       <h1>Diário de Leitura</h1>
-      <p class="hero__text">Registre suas leituras, capas, personagens, frases favoritas, empréstimos e lembranças especiais de cada livro.</p>
+      <p class="hero__text">Registre suas leituras, capas, personagens, frases favoritas, empréstimos, trilhas, bingo literário e lembranças visuais de cada livro.</p>
     </div>
   </header>
 
   <main class="app-shell">
     <nav class="tabs" aria-label="Navegação do diário">
       <button class="tab-button active" data-tab="diario">Novo registro</button>
-      <button class="tab-button" data-tab="estante">Estante</button>
+      <button class="tab-button" data-tab="estante">Minha estante</button>
+      <button class="tab-button" data-tab="avaliacao">Avaliação</button>
+      <button class="tab-button" data-tab="trilha">Trilha literária</button>
+      <button class="tab-button" data-tab="bingo">Bingo literário</button>
       <button class="tab-button" data-tab="desejados">Desejo ler</button>
       <button class="tab-button" data-tab="emprestimos">Empréstimos</button>
       <button class="tab-button" data-tab="ideias">Ideias extras</button>
@@ -40,17 +43,30 @@
 
           <label>Nome do livro
             <div class="search-row">
-              <input type="text" id="title" placeholder="Ex.: Dom Casmurro" required />
+              <input type="text" id="title" placeholder="Ex.: É assim que acaba" required />
               <button type="button" id="searchBookBtn">Buscar capa</button>
             </div>
           </label>
 
           <div class="grid grid-2 compact">
-            <label>Gênero do livro
-              <input type="text" id="genre" placeholder="Romance, ficção, biografia..." />
+            <label>Autor
+              <input type="text" id="author" placeholder="Nome do autor" />
             </label>
+            <label>Gênero do livro
+              <input type="text" id="genre" placeholder="Romance, fantasia, suspense..." />
+            </label>
+          </div>
+
+          <div class="grid grid-2 compact">
             <label>Número de páginas
               <input type="number" id="pages" min="1" placeholder="Ex.: 240" />
+            </label>
+            <label>Formato
+              <select id="bookFormat">
+                <option value="Livro físico">Livro físico</option>
+                <option value="E-book">E-book</option>
+                <option value="Audiobook">Audiobook</option>
+              </select>
             </label>
           </div>
 
@@ -63,6 +79,19 @@
             </label>
           </div>
 
+          <fieldset class="soft-fieldset">
+            <legend>Por que estou lendo esse livro?</legend>
+            <label class="check-line"><input type="checkbox" id="reasonRecommendation" /> Recomendação</label>
+            <label>Nome de quem recomendou
+              <input type="text" id="recommendedBy" placeholder="Ex.: amiga, professor, clube do livro..." />
+            </label>
+            <label class="check-line"><input type="checkbox" id="reasonTheme" /> Gostei do tema</label>
+            <label class="check-line"><input type="checkbox" id="reasonMovie" /> Assisti ao filme/série e fiquei curiosa</label>
+            <label>Outro motivo
+              <input type="text" id="reasonOther" placeholder="Escreva outro motivo" />
+            </label>
+          </fieldset>
+
           <label>Personagem favorito
             <input type="text" id="favoriteCharacter" placeholder="Nome do personagem" />
           </label>
@@ -71,12 +100,16 @@
             <textarea id="charactersNotes" rows="5" placeholder="Personalidade, atitudes, evolução, aparência, conflitos..."></textarea>
           </label>
 
+          <label>Descrição visual do personagem para gerar imagem depois
+            <textarea id="characterImagePrompt" rows="4" placeholder="Ex.: jovem, cabelo escuro, roupa simples, olhar sério, cenário de biblioteca..."></textarea>
+          </label>
+
           <label>Frases favoritas, Top 5
             <textarea id="favoriteQuotes" rows="5" placeholder="1. ...&#10;2. ...&#10;3. ...&#10;4. ...&#10;5. ..."></textarea>
           </label>
 
           <label>Espaço livre para anotações, colagens e lembranças
-            <textarea id="notes" rows="6" placeholder="Escreva sentimentos, cenas marcantes, links de imagens, ideias de colagem ou qualquer coisa que lembre o livro."></textarea>
+            <textarea id="notes" rows="6" placeholder="Use este espaço como página livre: sentimentos, cenas marcantes, links de imagens, colagens, objetos, símbolos, músicas ou qualquer coisa que lembre o livro."></textarea>
           </label>
 
           <label>Link de imagem personalizada ou colagem
@@ -87,7 +120,28 @@
             <input type="url" id="coverUrl" placeholder="A capa aparecerá automaticamente ou cole uma URL" />
           </label>
 
-          <label>Avaliação do livro
+          <div class="grid grid-3 compact mood-grid">
+            <label>Romântico
+              <select id="romanceMood"><option value="0">0</option><option value="1">♡</option><option value="2">♡♡</option><option value="3">♡♡♡</option><option value="4">♡♡♡♡</option><option value="5">♡♡♡♡♡</option></select>
+            </label>
+            <label>Divertido
+              <select id="funMood"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            </label>
+            <label>Triste
+              <select id="sadMood"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            </label>
+            <label>Medo
+              <select id="fearMood"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            </label>
+            <label>Nojo
+              <select id="disgustMood"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            </label>
+            <label>Hot
+              <select id="hotMood"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            </label>
+          </div>
+
+          <label>Avaliação geral do livro
             <select id="rating">
               <option value="5">★★★★★ Excelente</option>
               <option value="4">★★★★ Muito bom</option>
@@ -112,8 +166,12 @@
             <span>Sem capa ainda</span>
           </div>
           <div class="tip-box">
-            <h3>Sobre imagens dos personagens</h3>
-            <p>O diário terá espaço para descrever cada personagem. Depois, você pode usar essas descrições como prompt para gerar imagens parecidas com eles.</p>
+            <h3>Colagens livres</h3>
+            <p>O diário permite escrever ideias de colagem em qualquer parte do registro. Depois podemos evoluir para upload real de imagens e montagem visual estilo scrapbook.</p>
+          </div>
+          <div class="tip-box">
+            <h3>Personagens com imagem</h3>
+            <p>Use o campo de descrição visual do personagem. Ele servirá como base para gerar uma imagem parecida com o personagem em uma próxima integração.</p>
           </div>
         </aside>
       </div>
@@ -121,10 +179,58 @@
 
     <section class="tab-panel" id="estante">
       <div class="section-heading">
-        <h2>Estante dos livros lidos</h2>
-        <p>Depois da capa do diário, esta seria a página visual com todas as capas dos livros concluídos.</p>
+        <h2>Minha estante</h2>
+        <p>Pinte cada livro com a cor do gênero e acompanhe a estante de capas dos livros lidos.</p>
+      </div>
+      <div class="shelf-page">
+        <div class="mini-shelf" id="genreShelf"></div>
+        <aside class="legend-card">
+          <h3>Legenda de cores</h3>
+          <div class="legend-grid">
+            <span><i style="--c:#d64b75"></i>Romance</span><span><i style="--c:#f2a44c"></i>Comédia</span><span><i style="--c:#3ba5a3"></i>Ficção científica</span><span><i style="--c:#7f9a45"></i>Aventura</span><span><i style="--c:#4b8a4b"></i>Drama</span><span><i style="--c:#9a7a45"></i>Histórico</span><span><i style="--c:#345f8c"></i>Fábula</span><span><i style="--c:#5d8aa8"></i>Biografia</span><span><i style="--c:#b72b2b"></i>Épico/Mitológico</span><span><i style="--c:#7b3f98"></i>Fantasia</span><span><i style="--c:#252525"></i>Terror</span><span><i style="--c:#c43c35"></i>Policial</span><span><i style="--c:#9b59b6"></i>Distopia</span><span><i style="--c:#8e6f62"></i>Gótico</span><span><i style="--c:#2d7a65"></i>Realismo mágico</span><span><i style="--c:#6bbf45"></i>Infantil/Juvenil</span><span><i style="--c:#e65b5b"></i>Espionagem</span>
+          </div>
+        </aside>
       </div>
       <div class="bookshelf" id="bookshelf"></div>
+    </section>
+
+    <section class="tab-panel" id="avaliacao">
+      <div class="section-heading">
+        <h2>Sistema de avaliação</h2>
+        <p>Modelo inspirado em páginas físicas de diário: título, autor, gênero, formato, sentimentos, momentos favoritos e frase favorita.</p>
+      </div>
+      <div class="rating-guide card">
+        <h3>Sistema de estrelas</h3>
+        <p><strong>★</strong> Não gostei da história, personagens ou escrita do livro.</p>
+        <p><strong>★★</strong> Teve algum ponto legal, mas não gostei da leitura.</p>
+        <p><strong>★★★</strong> É bom, gostei de vários elementos, mas a experiência não foi muito boa.</p>
+        <p><strong>★★★★</strong> Adorei a leitura, a escrita e os personagens. Algo me incomodou, mas valeu muito.</p>
+        <p><strong>★★★★★</strong> Amei absolutamente tudo. Não mudaria nenhum detalhe.</p>
+        <p><strong>★★★★★❤</strong> Livro perfeito. Marcou minha vida e virou favorito.</p>
+      </div>
+      <div id="evaluationList" class="evaluation-list"></div>
+    </section>
+
+    <section class="tab-panel" id="trilha">
+      <div class="section-heading">
+        <h2>Trilha literária</h2>
+        <p>A cada 10 livros lidos, você desbloqueia um marco especial.</p>
+      </div>
+      <div class="trail-card card">
+        <div class="trail-progress"><span id="trailCount">0 livros lidos</span><strong id="trailReward">Continue lendo para desbloquear o primeiro marco.</strong></div>
+        <div class="trail-path" id="trailPath"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="bingo">
+      <div class="section-heading">
+        <h2>Bingo literário</h2>
+        <p>Os espaços são editáveis para você colocar seus próprios desafios de leitura.</p>
+      </div>
+      <form class="card" id="bingoForm">
+        <div class="bingo-grid" id="bingoGrid"></div>
+        <button type="submit" class="primary-action">Salvar bingo</button>
+      </form>
     </section>
 
     <section class="tab-panel" id="desejados">
@@ -197,12 +303,12 @@
         <p>Ideias que podem entrar nas próximas versões.</p>
       </div>
       <div class="ideas-grid">
-        <article class="idea-card"><h3>Linha do tempo</h3><p>Mostrar todos os livros lidos por mês e ano.</p></article>
+        <article class="idea-card"><h3>Upload de colagens</h3><p>Enviar fotos, adesivos digitais e imagens direto do computador ou celular.</p></article>
+        <article class="idea-card"><h3>Página por personagem</h3><p>Separar aparência, personalidade, evolução e imagem gerada.</p></article>
+        <article class="idea-card"><h3>Exportar PDF</h3><p>Transformar cada livro em uma página bonita para imprimir.</p></article>
         <article class="idea-card"><h3>Meta de leitura</h3><p>Definir uma meta anual e acompanhar o progresso.</p></article>
-        <article class="idea-card"><h3>Ranking pessoal</h3><p>Melhores livros, personagens mais marcantes e autores favoritos.</p></article>
-        <article class="idea-card"><h3>Mapa emocional</h3><p>Registrar como o livro fez você se sentir.</p></article>
-        <article class="idea-card"><h3>Gerador de prompt</h3><p>Criar descrições prontas para gerar imagens dos personagens.</p></article>
-        <article class="idea-card"><h3>Exportar PDF</h3><p>Transformar o diário em um arquivo bonito para guardar ou imprimir.</p></article>
+        <article class="idea-card"><h3>Ranking pessoal</h3><p>Melhores livros, personagens marcantes e autores favoritos.</p></article>
+        <article class="idea-card"><h3>Backup</h3><p>Salvar os dados em nuvem para não depender só do navegador.</p></article>
       </div>
     </section>
   </main>
@@ -216,6 +322,7 @@
         <p class="book-rating"></p>
         <details>
           <summary>Ver anotações</summary>
+          <p class="book-reason"></p>
           <p class="book-notes"></p>
           <p class="book-characters"></p>
           <p class="book-quotes"></p>
