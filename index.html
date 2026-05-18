@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diário de Leitura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">Meu caderno pessoal de livros</p>
+      <h1>Diário de Leitura</h1>
+      <p class="hero__text">Registre suas leituras, capas, personagens, frases favoritas, empréstimos e lembranças especiais de cada livro.</p>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <nav class="tabs" aria-label="Navegação do diário">
+      <button class="tab-button active" data-tab="diario">Novo registro</button>
+      <button class="tab-button" data-tab="estante">Estante</button>
+      <button class="tab-button" data-tab="desejados">Desejo ler</button>
+      <button class="tab-button" data-tab="emprestimos">Empréstimos</button>
+      <button class="tab-button" data-tab="ideias">Ideias extras</button>
+    </nav>
+
+    <section class="tab-panel active" id="diario">
+      <div class="grid grid-2">
+        <form class="card form-card" id="bookForm">
+          <div class="section-title">
+            <span>01</span>
+            <div>
+              <h2>Registro do livro</h2>
+              <p>Busque a capa pela API ou preencha manualmente.</p>
+            </div>
+          </div>
+
+          <label>Nome do livro
+            <div class="search-row">
+              <input type="text" id="title" placeholder="Ex.: Dom Casmurro" required />
+              <button type="button" id="searchBookBtn">Buscar capa</button>
+            </div>
+          </label>
+
+          <div class="grid grid-2 compact">
+            <label>Gênero do livro
+              <input type="text" id="genre" placeholder="Romance, ficção, biografia..." />
+            </label>
+            <label>Número de páginas
+              <input type="number" id="pages" min="1" placeholder="Ex.: 240" />
+            </label>
+          </div>
+
+          <div class="grid grid-2 compact">
+            <label>Início da leitura
+              <input type="date" id="startDate" />
+            </label>
+            <label>Término da leitura
+              <input type="date" id="endDate" />
+            </label>
+          </div>
+
+          <label>Personagem favorito
+            <input type="text" id="favoriteCharacter" placeholder="Nome do personagem" />
+          </label>
+
+          <label>Anotações sobre personagens
+            <textarea id="charactersNotes" rows="5" placeholder="Personalidade, atitudes, evolução, aparência, conflitos..."></textarea>
+          </label>
+
+          <label>Frases favoritas, Top 5
+            <textarea id="favoriteQuotes" rows="5" placeholder="1. ...&#10;2. ...&#10;3. ...&#10;4. ...&#10;5. ..."></textarea>
+          </label>
+
+          <label>Espaço livre para anotações, colagens e lembranças
+            <textarea id="notes" rows="6" placeholder="Escreva sentimentos, cenas marcantes, links de imagens, ideias de colagem ou qualquer coisa que lembre o livro."></textarea>
+          </label>
+
+          <label>Link de imagem personalizada ou colagem
+            <input type="url" id="memoryImage" placeholder="Cole aqui uma URL de imagem opcional" />
+          </label>
+
+          <label>Capa do livro
+            <input type="url" id="coverUrl" placeholder="A capa aparecerá automaticamente ou cole uma URL" />
+          </label>
+
+          <label>Avaliação do livro
+            <select id="rating">
+              <option value="5">★★★★★ Excelente</option>
+              <option value="4">★★★★ Muito bom</option>
+              <option value="3">★★★ Bom</option>
+              <option value="2">★★ Regular</option>
+              <option value="1">★ Não gostei</option>
+            </select>
+          </label>
+
+          <button type="submit" class="primary-action">Salvar no diário</button>
+        </form>
+
+        <aside class="card preview-card">
+          <div class="section-title">
+            <span>02</span>
+            <div>
+              <h2>Prévia da capa</h2>
+              <p>A capa buscada pela API aparece aqui.</p>
+            </div>
+          </div>
+          <div class="cover-preview" id="coverPreview">
+            <span>Sem capa ainda</span>
+          </div>
+          <div class="tip-box">
+            <h3>Sobre imagens dos personagens</h3>
+            <p>O diário terá espaço para descrever cada personagem. Depois, você pode usar essas descrições como prompt para gerar imagens parecidas com eles.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="estante">
+      <div class="section-heading">
+        <h2>Estante dos livros lidos</h2>
+        <p>Depois da capa do diário, esta seria a página visual com todas as capas dos livros concluídos.</p>
+      </div>
+      <div class="bookshelf" id="bookshelf"></div>
+    </section>
+
+    <section class="tab-panel" id="desejados">
+      <div class="grid grid-2">
+        <form class="card" id="wishlistForm">
+          <div class="section-title">
+            <span>03</span>
+            <div>
+              <h2>Livros que desejo ler</h2>
+              <p>Monte sua próxima lista de leitura.</p>
+            </div>
+          </div>
+          <label>Nome do livro
+            <input type="text" id="wishTitle" required />
+          </label>
+          <label>Motivo do interesse
+            <textarea id="wishReason" rows="4" placeholder="Por que quero ler esse livro?"></textarea>
+          </label>
+          <button type="submit" class="primary-action">Adicionar à lista</button>
+        </form>
+        <div class="card list-card">
+          <h2>Minha lista</h2>
+          <div id="wishlist"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="emprestimos">
+      <div class="grid grid-2">
+        <form class="card" id="loanForm">
+          <div class="section-title">
+            <span>04</span>
+            <div>
+              <h2>Livros emprestados</h2>
+              <p>Controle o que você pegou ou emprestou.</p>
+            </div>
+          </div>
+          <label>Tipo
+            <select id="loanType">
+              <option value="Peguei emprestado">Peguei emprestado</option>
+              <option value="Emprestei">Emprestei</option>
+            </select>
+          </label>
+          <label>Nome do livro
+            <input type="text" id="loanBook" required />
+          </label>
+          <label>Nome da pessoa
+            <input type="text" id="loanPerson" required />
+          </label>
+          <div class="grid grid-2 compact">
+            <label>Data do empréstimo
+              <input type="date" id="loanDate" />
+            </label>
+            <label>Data da devolução
+              <input type="date" id="returnDate" />
+            </label>
+          </div>
+          <button type="submit" class="primary-action">Salvar empréstimo</button>
+        </form>
+        <div class="card list-card">
+          <h2>Controle de empréstimos</h2>
+          <div id="loansList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="ideias">
+      <div class="section-heading">
+        <h2>Sugestões para deixar o diário mais completo</h2>
+        <p>Ideias que podem entrar nas próximas versões.</p>
+      </div>
+      <div class="ideas-grid">
+        <article class="idea-card"><h3>Linha do tempo</h3><p>Mostrar todos os livros lidos por mês e ano.</p></article>
+        <article class="idea-card"><h3>Meta de leitura</h3><p>Definir uma meta anual e acompanhar o progresso.</p></article>
+        <article class="idea-card"><h3>Ranking pessoal</h3><p>Melhores livros, personagens mais marcantes e autores favoritos.</p></article>
+        <article class="idea-card"><h3>Mapa emocional</h3><p>Registrar como o livro fez você se sentir.</p></article>
+        <article class="idea-card"><h3>Gerador de prompt</h3><p>Criar descrições prontas para gerar imagens dos personagens.</p></article>
+        <article class="idea-card"><h3>Exportar PDF</h3><p>Transformar o diário em um arquivo bonito para guardar ou imprimir.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <template id="bookCardTemplate">
+    <article class="book-card">
+      <img class="book-card__cover" alt="Capa do livro" />
+      <div class="book-card__body">
+        <h3></h3>
+        <p class="book-meta"></p>
+        <p class="book-rating"></p>
+        <details>
+          <summary>Ver anotações</summary>
+          <p class="book-notes"></p>
+          <p class="book-characters"></p>
+          <p class="book-quotes"></p>
+        </details>
+      </div>
+    </article>
+  </template>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
