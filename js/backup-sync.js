@@ -16,6 +16,8 @@ function getBackupPayload() {
     data[key] = JSON.parse(localStorage.getItem(key) || '[]');
   });
 
+  data['diarioLeitura.profile'] = JSON.parse(localStorage.getItem('diarioLeitura.profile') || '{}');
+
   return {
     app: backupConfig.appName,
     version: backupConfig.version,
@@ -51,8 +53,12 @@ function exportReadableBackup() {
   const books = JSON.parse(localStorage.getItem('diarioLeitura.books') || '[]');
   const wishlist = JSON.parse(localStorage.getItem('diarioLeitura.wishlist') || '[]');
   const loans = JSON.parse(localStorage.getItem('diarioLeitura.loans') || '[]');
+  const profile = JSON.parse(localStorage.getItem('diarioLeitura.profile') || '{}');
 
-  let text = `DIÁRIO DE LEITURA\nExportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+  let text = `DIÁRIO DE LEITURA\n`;
+  if (profile.readerName) text += `Leitor(a): ${profile.readerName}\n`;
+  if (profile.diaryPhrase) text += `Frase: ${profile.diaryPhrase}\n`;
+  text += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
 
   text += 'LIVROS LIDOS\n';
   text += '====================\n';
@@ -87,7 +93,7 @@ function validateBackupPayload(payload) {
   if (!payload || typeof payload !== 'object') return false;
   if (!payload.data || typeof payload.data !== 'object') return false;
 
-  return backupConfig.storageKeys.some((key) => Array.isArray(payload.data[key]));
+  return backupConfig.storageKeys.some((key) => Array.isArray(payload.data[key])) || Boolean(payload.data['diarioLeitura.profile']);
 }
 
 function importBackupFile(file) {
@@ -109,6 +115,10 @@ function importBackupFile(file) {
         const value = Array.isArray(payload.data[key]) ? payload.data[key] : [];
         localStorage.setItem(key, JSON.stringify(value));
       });
+
+      if (payload.data['diarioLeitura.profile']) {
+        localStorage.setItem('diarioLeitura.profile', JSON.stringify(payload.data['diarioLeitura.profile']));
+      }
 
       setSyncStatus('Backup importado com sucesso. A página será atualizada.');
       setLastBackupDate();
@@ -151,6 +161,10 @@ function restoreSnapshot() {
       localStorage.setItem(key, JSON.stringify(payload.data[key] || []));
     });
 
+    if (payload.data['diarioLeitura.profile']) {
+      localStorage.setItem('diarioLeitura.profile', JSON.stringify(payload.data['diarioLeitura.profile']));
+    }
+
     setSyncStatus('Cópia rápida restaurada. A página será atualizada.');
     setTimeout(() => window.location.reload(), 900);
   } catch (error) {
@@ -159,10 +173,11 @@ function restoreSnapshot() {
 }
 
 function clearAllData() {
-  const confirmed = confirm('Isso vai apagar livros, lista de desejos, empréstimos e bingo deste navegador. Deseja continuar?');
+  const confirmed = confirm('Isso vai apagar livros, lista de desejos, empréstimos, bingo e perfil deste navegador. Deseja continuar?');
   if (!confirmed) return;
 
   backupConfig.storageKeys.forEach((key) => localStorage.removeItem(key));
+  localStorage.removeItem('diarioLeitura.profile');
   setSyncStatus('Dados apagados deste navegador. A página será atualizada.');
   setTimeout(() => window.location.reload(), 900);
 }
@@ -190,10 +205,12 @@ function renderBackupStats() {
   const wishlist = JSON.parse(localStorage.getItem('diarioLeitura.wishlist') || '[]');
   const loans = JSON.parse(localStorage.getItem('diarioLeitura.loans') || '[]');
   const bingo = JSON.parse(localStorage.getItem('diarioLeitura.bingo') || '[]');
+  const profile = JSON.parse(localStorage.getItem('diarioLeitura.profile') || '{}');
   const lastBackup = localStorage.getItem('diarioLeitura.lastBackupAt');
   const lastSnapshot = localStorage.getItem('diarioLeitura.lastSnapshotAt');
 
   stats.innerHTML = `
+    <div><strong>${profile.readerName || 'Sem nome'}</strong><span>perfil</span></div>
     <div><strong>${books.length}</strong><span>livros lidos</span></div>
     <div><strong>${wishlist.length}</strong><span>desejos</span></div>
     <div><strong>${loans.length}</strong><span>empréstimos</span></div>
@@ -284,10 +301,19 @@ function loadProfessionalFixes() {
   document.body.appendChild(script);
 }
 
+function loadProfilePersonalization() {
+  if (document.querySelector('script[data-profile-personalization]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/profile-personalization.js';
+  script.dataset.profilePersonalization = 'true';
+  document.body.appendChild(script);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   injectBackupStyles();
   injectBackupTab();
   bindBackupEvents();
   renderBackupStats();
+  loadProfilePersonalization();
   loadProfessionalFixes();
 });
