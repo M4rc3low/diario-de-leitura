@@ -206,84 +206,18 @@ function renderBackupStats() {
 function injectBackupStyles() {
   const style = document.createElement('style');
   style.textContent = `
-    .backup-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .backup-action {
-      border: 0;
-      border-radius: 20px;
-      padding: 18px;
-      text-align: left;
-      background: #fffdf8;
-      color: var(--ink);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--line);
-    }
-
-    .backup-action strong {
-      display: block;
-      margin-bottom: 6px;
-      font-family: "Cormorant Garamond", Georgia, serif;
-      font-size: 1.45rem;
-      color: var(--accent-dark);
-    }
-
-    .backup-action span {
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .backup-action.primary {
-      background: var(--accent);
-      color: #fffaf3;
-    }
-
-    .backup-action.primary strong,
-    .backup-action.primary span {
-      color: #fffaf3;
-    }
-
-    .backup-file-input {
-      display: none;
-    }
-
-    .backup-status {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 18px;
-      background: #f3e5d7;
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-
-    .backup-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .backup-stats div {
-      padding: 14px;
-      border-radius: 18px;
-      background: #fffdf8;
-      border: 1px solid var(--line);
-    }
-
-    .backup-stats strong {
-      display: block;
-      color: var(--accent-dark);
-      font-size: 1.05rem;
-    }
-
-    .backup-stats span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
+    .backup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .backup-action { border: 0; border-radius: 20px; padding: 18px; text-align: left; background: #fffdf8; color: var(--ink); box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .backup-action strong { display: block; margin-bottom: 6px; font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.45rem; color: var(--accent-dark); }
+    .backup-action span { color: var(--muted); line-height: 1.45; }
+    .backup-action.primary { background: var(--accent); color: #fffaf3; }
+    .backup-action.primary strong, .backup-action.primary span { color: #fffaf3; }
+    .backup-file-input { display: none; }
+    .backup-status { margin-top: 16px; padding: 14px; border-radius: 18px; background: #f3e5d7; color: var(--accent-dark); font-weight: 700; }
+    .backup-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 18px; }
+    .backup-stats div { padding: 14px; border-radius: 18px; background: #fffdf8; border: 1px solid var(--line); }
+    .backup-stats strong { display: block; color: var(--accent-dark); font-size: 1.05rem; }
+    .backup-stats span { color: var(--muted); font-size: 0.9rem; }
   `;
   document.head.appendChild(style);
 }
@@ -304,10 +238,7 @@ function injectBackupTab() {
   section.className = 'tab-panel';
   section.id = 'backup';
   section.innerHTML = `
-    <div class="section-heading">
-      <h2>Sincronizador e backup</h2>
-      <p>Exporte, importe, crie uma cópia rápida e leve seus dados para outro navegador, computador ou futuro app mobile.</p>
-    </div>
+    <div class="section-heading"><h2>Sincronizador e backup</h2><p>Exporte, importe, crie uma cópia rápida e leve seus dados para outro navegador, computador ou futuro app mobile.</p></div>
     <div class="card">
       <div class="backup-grid">
         <button type="button" class="backup-action primary" id="exportBackupBtn"><strong>Exportar backup JSON</strong><span>Arquivo completo para restaurar depois.</span></button>
@@ -345,9 +276,18 @@ function bindBackupEvents() {
   });
 }
 
+function loadProfessionalFixes() {
+  if (document.querySelector('script[data-professional-fixes]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/professional-fixes.js';
+  script.dataset.professionalFixes = 'true';
+  document.body.appendChild(script);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   injectBackupStyles();
   injectBackupTab();
   bindBackupEvents();
   renderBackupStats();
+  loadProfessionalFixes();
 });
