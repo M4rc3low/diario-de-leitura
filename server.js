@@ -7,10 +7,12 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ISBNDB_API_KEY = process.env.ISBNDB_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const ISBNDB_BASE_URL = 'https://api2.isbndb.com';
+const OPENAI_IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2';
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname)));
 
 function onlyDigits(value = '') {
@@ -68,6 +70,26 @@ async function searchISBNdbByIsbn(isbn) {
   return data.book ? [normalizeIsbndbBook(data.book)] : [];
 }
 
+function buildCharacterPrompt({ name, role, notes, visual, bookTitle, style }) {
+  const selectedStyle = style || 'ilustração literária semi-realista, bonita, delicada, com aparência de personagem de livro';
+
+  return `Crie uma imagem de personagem fictício para um diário de leitura.
+
+Regras importantes:
+- Não use texto escrito na imagem.
+- Não copie personagem famoso, ator, atriz, pessoa real ou estilo de artista vivo.
+- Crie uma pessoa/personagem original com base na descrição.
+- Imagem vertical, estilo capa de personagem, fundo simples e bonito.
+- Resultado apropriado para um diário de leitura.
+
+Livro: ${bookTitle || 'não informado'}
+Nome do personagem: ${name || 'personagem sem nome'}
+Papel na história: ${role || 'não informado'}
+Anotações do leitor: ${notes || 'sem anotações'}
+Aparência desejada: ${visual || 'usar interpretação criativa a partir das informações disponíveis'}
+Estilo visual: ${selectedStyle}`;
+}
+
 app.get('/api/isbndb/search', async (req, res) => {
   const query = String(req.query.q || '').trim();
 
@@ -95,11 +117,71 @@ app.get('/api/isbndb/search', async (req, res) => {
   }
 });
 
+app.post('/api/ai/character-image', async (req, res) => {
+  if (!OPENAI_API_KEY) {
+    return res.status(200).json({
+      warning: 'OPENAI_API_KEY não configurada. Configure a chave no arquivo .env para gerar imagens reais por IA.',
+      image: ''
+    });
+  }
+
+  const { name, role, notes, visual, bookTitle, style } = req.body || {};
+
+  if (!name && !visual && !notes) {
+    return res.status(400).json({ error: 'Informe pelo menos nome, descrição ou anotações do personagem.' });
+  }
+
+  try {
+    const prompt = buildCharacterPrompt({ name, role, notes, visual, bookTitle, style });
+
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: OPENAI_IMAGE_MODEL,
+        prompt,
+        size: '1024x1536',
+        quality: 'low',
+        output_format: 'jpeg',
+        output_compression: 80
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: data.error?.message || data.message || 'Erro ao gerar imagem com IA.'
+      });
+    }
+
+    const base64 = data.data?.[0]?.b64_json;
+
+    if (!base64) {
+      return res.status(500).json({ error: 'A IA não retornou imagem.' });
+    }
+
+    return res.json({
+      image: `data:image/jpeg;base64,${base64}`,
+      source: OPENAI_IMAGE_MODEL
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message || 'Falha interna ao gerar imagem do personagem.'
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
     isbndbConfigured: Boolean(ISBNDB_API_KEY),
-    isbndbBaseUrl: ISBNDB_BASE_URL
+    openaiConfigured: Boolean(OPENAI_API_KEY),
+    isbndbBaseUrl: ISBNDB_BASE_URL,
+    openaiImageModel: OPENAI_IMAGE_MODEL
   });
 });
 
