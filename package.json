@@ -1,0 +1,15 @@
+{
+  "name": "diario-de-leitura",
+  "version": "1.0.0",
+  "description": "Diário de leitura com busca de capas por Open Library, Google Books e ISBNdb.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {}
+}
