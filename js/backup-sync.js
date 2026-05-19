@@ -309,6 +309,14 @@ function loadProfilePersonalization() {
   document.body.appendChild(script);
 }
 
+function loadAiCharacterImage() {
+  if (document.querySelector('script[data-ai-character-image]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/ai-character-image.js';
+  script.dataset.aiCharacterImage = 'true';
+  document.body.appendChild(script);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   injectBackupStyles();
   injectBackupTab();
@@ -316,4 +324,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBackupStats();
   loadProfilePersonalization();
   loadProfessionalFixes();
+  loadAiCharacterImage();
 });
