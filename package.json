@@ -5,10 +5,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "mobile:init": "npx cap init DiarioDeLeitura com.marcelo.diariodeleitura --web-dir .",
-    "mobile:add:android": "npx cap add android",
-    "mobile:add:ios": "npx cap add ios",
-    "mobile:sync": "npx cap sync",
+    "mobile:prepare": "node scripts/prepare-mobile.js",
+    "mobile:init": "npx cap init DiarioDeLeitura com.marcelo.diariodeleitura --web-dir www",
+    "mobile:add:android": "npm run mobile:prepare && npx cap add android",
+    "mobile:add:ios": "npm run mobile:prepare && npx cap add ios",
+    "mobile:sync": "npm run mobile:prepare && npx cap sync",
+    "mobile:sync:android": "npm run mobile:prepare && npx cap sync android",
     "mobile:open:android": "npx cap open android",
     "mobile:open:ios": "npx cap open ios"
   },
