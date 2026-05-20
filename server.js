@@ -40,6 +40,24 @@ function normalizeIsbndbBook(book = {}) {
   };
 }
 
+function translateOpenAIError(message = '') {
+  const normalized = String(message).toLowerCase();
+
+  if (normalized.includes('billing hard limit') || normalized.includes('hard limit')) {
+    return 'O limite de cobrança/créditos da conta OpenAI foi atingido. A geração por IA está configurada, mas a OpenAI bloqueou novas imagens até você aumentar o limite, adicionar créditos ou trocar a chave por uma conta com saldo disponível.';
+  }
+
+  if (normalized.includes('insufficient_quota') || normalized.includes('quota')) {
+    return 'A conta OpenAI está sem cota ou sem créditos disponíveis para gerar imagem agora.';
+  }
+
+  if (normalized.includes('invalid api key') || normalized.includes('incorrect api key')) {
+    return 'A chave da OpenAI é inválida. Gere uma nova chave e coloque no arquivo .env.';
+  }
+
+  return message || 'Erro ao gerar imagem com IA.';
+}
+
 async function fetchISBNdb(endpoint) {
   const response = await fetch(`${ISBNDB_BASE_URL}${endpoint}`, {
     headers: {
@@ -153,8 +171,10 @@ app.post('/api/ai/character-image', async (req, res) => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      const rawMessage = data.error?.message || data.message || 'Erro ao gerar imagem com IA.';
       return res.status(response.status).json({
-        error: data.error?.message || data.message || 'Erro ao gerar imagem com IA.'
+        error: translateOpenAIError(rawMessage),
+        rawError: rawMessage
       });
     }
 
@@ -170,7 +190,7 @@ app.post('/api/ai/character-image', async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      error: error.message || 'Falha interna ao gerar imagem do personagem.'
+      error: translateOpenAIError(error.message) || 'Falha interna ao gerar imagem do personagem.'
     });
   }
 });
