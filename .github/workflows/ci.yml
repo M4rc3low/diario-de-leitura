@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Install dependencies and validate JavaScript
+    name: Validate JavaScript syntax
     runs-on: ubuntu-latest
 
     steps:
@@ -18,10 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          node-version: 22
 
       - name: Validate server syntax
         run: node --check server.js
