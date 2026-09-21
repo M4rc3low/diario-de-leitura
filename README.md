@@ -110,7 +110,7 @@ diario-de-leitura/
 
 ## Qualidade e CI
 
-A pipeline instala as dependências e valida a sintaxe dos principais arquivos JavaScript com `node --check` em pushes e pull requests para `main`.
+A pipeline usa Node.js 22 e valida a sintaxe dos principais arquivos JavaScript com `node --check` em pushes e pull requests para `main`, sem instalar dependências desnecessariamente para essa verificação.
 
 - Chaves de API não devem ser versionadas.
 - O arquivo `.env` deve ficar fora do Git.
